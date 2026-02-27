@@ -487,7 +487,7 @@ async function saveToSheetDB(booking, imgUrl, bookingId) {
 
     const row = {
         booking_id: bookingId,
-        timeline: new Date().toISOString(),         // ISO 8601 timestamp
+        timeline: new Date().toLocaleString("en-IN", { timeZone: "Asia/Kolkata" }),         // ISO 8601 timestamp
         name: booking.name,
         number: booking.phone,
         city: booking.city,
