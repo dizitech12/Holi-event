@@ -482,7 +482,7 @@ async function saveToSheetDB(booking, imgUrl) {
     const url = `https://sheetdb.io/api/v1/${SHEETDB_ID}`;
 
     const row = {
-        timeline: new Date().toISOString(),         // ISO 8601 timestamp
+        timeline: new Date().toLocaleString("en-IN", { timeZone: "Asia/Kolkata" }),         // ISO 8601 timestamp
         name: booking.name,
         number: booking.phone,
         city: booking.city,
