@@ -389,11 +389,14 @@ function initFileUpload(bookingData) {
 
             submitBtn.innerHTML = `<span class="spinner"></span>&nbsp; Saving booking…`;
 
+            // Generate Booking ID
+            const bookingId = "HOLI-" + Date.now().toString(36).toUpperCase();
+
             // 2. Save row to SheetDB
-            await saveToSheetDB(bookingData, imgUrl);
+            await saveToSheetDB(bookingData, imgUrl, bookingId);
 
             // 3. Show success
-            showSuccessScreen(bookingData, imgUrl);
+            showSuccessScreen(bookingData, imgUrl, bookingId);
             launchConfetti();
 
             // Clear sessionStorage
@@ -469,7 +472,7 @@ async function uploadToImgBB(file) {
  *
  * POST body: { "data": { ...row fields... } }
  * Column names must exactly match your Sheet headers:
- *   timeline | name | number | city | attendees | total_amount | img_url
+ *   booking_id | timeline | name | number | city | attendees | total_amount | img_url
  *
  * NOTE: Replace SHEETDB_ID at the top of this file.
  *       If SheetDB supports domain restriction, enable it in your account.
@@ -477,12 +480,14 @@ async function uploadToImgBB(file) {
  *
  * @param {Object} booking
  * @param {string} imgUrl
+ * @param {string} bookingId
  */
-async function saveToSheetDB(booking, imgUrl) {
+async function saveToSheetDB(booking, imgUrl, bookingId) {
     const url = `https://sheetdb.io/api/v1/${SHEETDB_ID}`;
 
     const row = {
-        timeline: new Date().toLocaleString("en-IN", { timeZone: "Asia/Kolkata" }),         // ISO 8601 timestamp
+        booking_id: bookingId,
+        timeline: new Date().toISOString(),         // ISO 8601 timestamp
         name: booking.name,
         number: booking.phone,
         city: booking.city,
@@ -514,8 +519,9 @@ async function saveToSheetDB(booking, imgUrl) {
  * Hide the payment UI and show the success message.
  * @param {Object} booking
  * @param {string} imgUrl
+ * @param {string} bookingId
  */
-function showSuccessScreen(booking, imgUrl) {
+function showSuccessScreen(booking, imgUrl, bookingId) {
     // Hide the payment card
     const payCard = document.getElementById("pay-card");
     if (payCard) payCard.style.display = "none";
@@ -530,9 +536,8 @@ function showSuccessScreen(booking, imgUrl) {
     document.getElementById("s-city").textContent = booking.city;
     document.getElementById("s-time").textContent = new Date().toLocaleString("en-IN");
 
-    // Optional booking reference (timestamp-based)
-    const ref = "HOLI-" + Date.now().toString(36).toUpperCase();
-    document.getElementById("s-ref").textContent = ref;
+    // Booking reference
+    document.getElementById("s-ref").textContent = bookingId;
 }
 
 /* ──────────────────────────────────────────────
